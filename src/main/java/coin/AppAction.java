@@ -34,7 +34,7 @@ public class AppAction {
 		
 		funcode = "sfile";
 		BaseFunc func = getFunc(funcode);
-		if (func == null){
+		if (func == null) {
 			System.out.println(">> 没有该功能编码, 请确认再操作. funcode="+funcode);
 		} else {
 			func.action(args);
