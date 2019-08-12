@@ -4,15 +4,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
 /**
  * JSON 工具类
- * 传入的JSON字符格式由使用者保证,
- * 若不符合则返回NULL
  * @author Qian
  */
 public class CJSONUtils {
@@ -36,7 +34,8 @@ public class CJSONUtils {
 			SerializerFeature.WriteNullListAsEmpty, 
 			/* 字符类型字段如果为null，输出为""，而不是null*/
 			SerializerFeature.WriteNullStringAsEmpty,
-			/* 全局修改日期格式,默认为false。JSON.DEFFAULT_DATE_FORMAT = “yyyy-MM-dd”*/
+			/* 全局修改日期格式,默认为false。
+			JSON.DEFFAULT_DATE_FORMAT = “yyyy-MM-dd”*/
 			SerializerFeature.WriteDateUseDateFormat, 
 			/* 消除对同一对象循环引用的问题，默认为false*/
 			SerializerFeature.DisableCircularReferenceDetect 
@@ -48,7 +47,7 @@ public class CJSONUtils {
 	
 	/**
 	 * 将JSON字符串转换成Bean对象
-	 * For Excemple:<br>
+	 * For Example:<br>
 	 * 	Person person = CJSONUtils.jsonToBean(jsonstr, Person.class);<br>
 	 * 	JSONObject jsonObject = CJSONUtils.jsonToBean(jsonstr, JSONObject.class);<br>
 	 * @param jsonstr JSON串
@@ -234,32 +233,31 @@ public class CJSONUtils {
 		private String key;
 		
 		// 被查值
-		private Object value;
+		private Object rawValue;
 		
 		// 下一个被查值列表
 		private List<Object> nextList;
 
-		public FindAction(Object value, String key, int n){
+		public FindAction(Object rawValue, String key, int n){
 			this.n = n;
 			this.key = key;
-			this.value = value;
+			this.rawValue = rawValue;
 			this.init();
 		}
 		
 		private void init() {
-			if (value instanceof String) {
+			if (rawValue instanceof String) {
 				try{
-					String jsonstr = ((String) value).trim();
+					String jsonstr = ((String) rawValue).trim();
 					if (jsonstr.startsWith("{"))
-						this.value = JSON.parseObject(jsonstr);
+						this.rawValue = JSON.parseObject(jsonstr);
 					else if (jsonstr.startsWith("["))
-						this.value = JSON.parseArray(jsonstr);
+						this.rawValue = JSON.parseArray(jsonstr);
 				}catch(Exception e) {
 					// ignore
 				}
 			} 
-			nextList = new ArrayList<Object>(1);
-			nextList.add(value);
+			nextList = Arrays.asList(rawValue);
 		}
 		
 		/**
@@ -267,9 +265,8 @@ public class CJSONUtils {
 		 * @param type 枚举:JSONObject|JSONArray|String
 		 */
 		public <T> T searchValue(Class<T> type) {
-			
-			List<Object> nList = new ArrayList<Object>();
-			//List<Object> nList = new LinkedList<Object>();
+
+			List<Object> nList = new LinkedList();
 			for (Object obj : nextList) {
 				if (obj instanceof JSONObject) {
 					
@@ -278,13 +275,14 @@ public class CJSONUtils {
 						Object target = jsonObj.get(key);
 						if (type == String.class && count++ == n) {
 							// 查找字符串类型
-							return (T) (target!=null ? target.toString() : null);
-						}
-						if ((target instanceof JSONObject && type == JSONObject.class
-								|| target instanceof JSONArray && type == JSONArray.class) 
-								&& count++ == n) {
+							return  target != null ? (T) target.toString() : null;
+
+						} else if ((target instanceof JSONObject && type == JSONObject.class
+							|| target instanceof JSONArray && type == JSONArray.class)
+							&& count++ == n) {
 							// 查找JSON对象及数组类型
 							return (T) target;
+
 						}
 					}
 					
@@ -298,14 +296,10 @@ public class CJSONUtils {
 					nList.addAll((JSONArray) obj);
 				}
 			}
-			
+
 			// 没匹配到则再次迭代
-			if (nList.size() > 0) {
-				nextList = nList;
-				return searchValue(type);
-			}
-			
-			return null;
+			nextList = nList;
+			return nextList.size() > 0 ? searchValue(type) : null;
 		}
 		
 	}
@@ -314,21 +308,21 @@ public class CJSONUtils {
 	
 	public static void main(String[] args) {
 
-		String jsonstr = "{\"array\":[{\"test\":\"1\"},{\"obj\":{\"obj\":{\"test\":\"5\"},\"test\":\"3\"},\"test\":\"2\"},{\"obj\":{\"test123\":\"1098\"}},{\"obj\":{\"test\":\"4\"}}]}";
+		String jsonstr = "{\"array\":[{\"test\":null},{\"obj\":{\"obj\":{\"test\":\"5\"},\"test\":\"3\"},\"test\":\"2\"},{\"obj\":{\"test123\":\"1098\"}},{\"obj\":{\"test\":\"4\"}}]}";
 
 		System.out.println(findValue(jsonstr, "test", 1));
 		System.out.println(findValue(jsonstr, "test", 2));
 		System.out.println(findValue(jsonstr, "test", 3));
 		System.out.println(findValue(jsonstr, "test", 4));
-		
+
 		JSONObject jsonObject = jsonToBean(jsonstr, JSONObject.class);
 		System.out.println(findObject(jsonObject, "obj"));
 		System.out.println(findArray(jsonObject, "array"));
-		
+
 		for(int j = 0; j < 10; j++) {
 			long startTime = System.currentTimeMillis();
 			for(int i = 0; i < 10*10000; i++) {
-				findValue(jsonstr, "test", 3);
+				findValue(jsonstr, "cust_name", 3);
 			}
 			System.out.println(">> spend time : " + (System.currentTimeMillis() - startTime));
 		}
