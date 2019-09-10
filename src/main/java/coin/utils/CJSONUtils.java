@@ -4,9 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+
+import java.util.*;
 import java.util.Map.Entry;
 
 /**
@@ -257,7 +256,7 @@ public class CJSONUtils {
 					// ignore
 				}
 			} 
-			nextList = Arrays.asList(rawValue);
+			nextList = Collections.singletonList(rawValue);
 		}
 		
 		/**
@@ -266,32 +265,38 @@ public class CJSONUtils {
 		 */
 		public <T> T searchValue(Class<T> type) {
 
-			List<Object> nList = new LinkedList();
+			List<Object> nList = new ArrayList<Object>();
 			for (Object obj : nextList) {
 				if (obj instanceof JSONObject) {
-					
+
 					JSONObject jsonObj = (JSONObject) obj;
 					if (jsonObj.containsKey(key)) {
 						Object target = jsonObj.get(key);
 						if (type == String.class && count++ == n) {
 							// 查找字符串类型
-							return  target != null ? (T) target.toString() : null;
-
-						} else if ((target instanceof JSONObject && type == JSONObject.class
-							|| target instanceof JSONArray && type == JSONArray.class)
-							&& count++ == n) {
-							// 查找JSON对象及数组类型
+							return  target!=null ? (T) target.toString() : null;
+						}
+						if (type == JSONObject.class
+								&& (target == null || target instanceof JSONObject)
+								&& count++ == n) {
 							return (T) target;
+						}
+						if (type == JSONArray.class
+								&& (target == null || target instanceof JSONArray)
+								&& count++ == n) {
+							return (T) target;
+						}
+					}
 
-						}
-					}
-					
 					for (Entry<String, Object> ent : jsonObj.entrySet()) {
-						if (!(ent.getValue() instanceof String )) {
-							nList.add(ent.getValue());
+						Object object = ent.getValue();
+						if (object instanceof JSONObject) {
+							nList.add(object);
+						} else if (object instanceof JSONArray) {
+							nList.addAll((JSONArray) object);
 						}
 					}
-					
+
 				} else if (obj instanceof JSONArray) {
 					nList.addAll((JSONArray) obj);
 				}
@@ -308,7 +313,7 @@ public class CJSONUtils {
 	
 	public static void main(String[] args) {
 
-		String jsonstr = "{\"array\":[{\"test\":null},{\"obj\":{\"obj\":{\"test\":\"5\"},\"test\":\"3\"},\"test\":\"2\"},{\"obj\":{\"test123\":\"1098\"}},{\"obj\":{\"test\":\"4\"}}]}";
+		String jsonstr = "{\"array\":[{\"test\":\"1\"},{\"obj\":{\"obj\":{\"test\":\"5\"},\"test\":\"3\"},\"test\":\"2\"},{\"obj\":{\"test123\":\"1098\"}},{\"obj\":{\"test\":\"4\"}}]}";
 
 		System.out.println(findValue(jsonstr, "test", 1));
 		System.out.println(findValue(jsonstr, "test", 2));
