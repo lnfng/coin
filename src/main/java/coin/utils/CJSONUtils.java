@@ -270,20 +270,17 @@ public class CJSONUtils {
 				if (obj instanceof JSONObject) {
 
 					JSONObject jsonObj = (JSONObject) obj;
-					if (jsonObj.containsKey(key)) {
+					if (jsonObj.containsKey(key) && count++ == n) {
 						Object target = jsonObj.get(key);
-						if (type == String.class && count++ == n) {
+						if (target == null) {
+						    return null;
+                        }
+						if (type == String.class) {
 							// 查找字符串类型
-							return  target!=null ? (T) target.toString() : null;
+							return  (T) target.toString();
 						}
-						if (type == JSONObject.class
-								&& (target == null || target instanceof JSONObject)
-								&& count++ == n) {
-							return (T) target;
-						}
-						if (type == JSONArray.class
-								&& (target == null || target instanceof JSONArray)
-								&& count++ == n) {
+						if (type == JSONObject.class &&  target instanceof JSONObject
+                                || type == JSONArray.class && target instanceof JSONArray) {
 							return (T) target;
 						}
 					}

@@ -81,8 +81,8 @@ public class DBOperater {
     
   
     /**  
-     * @param sql数据库执行(增、删、改)语句      
-     * @param pras参数列表  
+     * @param sql 数据库执行(增、删、改)语句
+     * @param params 参数列表
      * @return 返回受影响都行数  
      */  
     public int execute(String sql,String... params){  
@@ -100,7 +100,7 @@ public class DBOperater {
 	/**
 	 * 查询返回单个对象转成Map
 	 * @param sql
-	 * @param args
+	 * @param params
 	 * @return
 	 */
 	public Map<String,Object> queryForMap(String sql,String... params){
@@ -154,7 +154,7 @@ public class DBOperater {
 	/**
 	 * 查询返回List每个元素为Map对象
 	 * @param sql
-	 * @param args
+	 * @param params
 	 * @return
 	 */
 	public List<Map> queryForList(String sql,String... params){
@@ -343,7 +343,16 @@ public class DBOperater {
 	 * @return
 	 */
 	public static boolean isBlankStr(String str){
-		return (str==null||"".equals(str.trim()));
+        int strLen = str == null ? 0 : str.length();
+        if (strLen == 0) {
+            return true;
+        }
+        for (int i = 0; i < strLen; i++) {
+            if (!Character.isWhitespace(str.charAt(i))) {
+                return false; // 如果有非空白的则是非空
+            }
+        }
+        return true;
 	}
 	
 }  
