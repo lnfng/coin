@@ -7,10 +7,12 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="coin" />
+        <module name="mcore" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
       <module name="coin" target="1.8" />
+      <module name="mcore" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

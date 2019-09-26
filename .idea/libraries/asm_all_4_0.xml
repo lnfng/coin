@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="asm-all-4.0">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../mcore/src/main/resources/cglib/asm-all-4.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../mcore/src/main/resources/cglib/cglib-2.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../mcore/src/main/resources/cglib/cglib-3.2.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../mcore/src/main/resources/cglib/cglib-nodep-3.2.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
