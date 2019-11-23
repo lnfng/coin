@@ -1,6 +1,5 @@
 package coin.utils.terminal;
 
-import java.util.Map;
 import java.util.WeakHashMap;
 
 import com.jcraft.jsch.JSch;
@@ -23,7 +22,8 @@ public class SshSessionContainer {
 	/**
 	 *  缓存作用
 	 */
-	private final static Map<UserInfo,Session> SESSION_CONTAINER = new WeakHashMap();
+	private final static WeakHashMap<UserInfo, Session> SESSION_CONTAINER = new WeakHashMap<>();
+
 	
 	/**
 	 * 获取终端会话
@@ -36,9 +36,20 @@ public class SshSessionContainer {
 			return session;
 		}
 		session = createSession(userInfo);
-		SESSION_CONTAINER.remove(userInfo);
 		SESSION_CONTAINER.put(userInfo, session);
 		return session;
+	}
+
+	/**
+	 * 从容器中移除, 并关闭
+	 * @param userInfo
+	 * @return
+	 */
+	public static void removeSession(UserInfo userInfo) {
+		Session session = SESSION_CONTAINER.remove(userInfo);
+		if (session != null) {
+			session.disconnect();
+		}
 	}
 	
 	/**

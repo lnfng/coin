@@ -20,34 +20,23 @@ public class SshChannelFactory {
 		}
 	}
 
-	/**
-	 * 关闭会话, 谨慎操作, 可能引起该会话连接的通道异常
-	 * @param userInfo
-	 */
-	public static void disConnSession(UserInfo userInfo){
-		Session session = SshSessionContainer.getSession(userInfo);
-		if (session != null) {
-			session.disconnect();
-		}
-	}
-	
-	
+
 	/**
 	 * 通道类型
 	 * @author Qian
 	 */
-	public enum ChannelType{
+	public enum ChannelType {
 		shell,exec,sftp;
 		
-		public static String getChannelType(Class<?> clazz){
+		public static String getChannelType(Class<?> clazz) {
 			ChannelType ctype = null;
-			if(ChannelShell.class == clazz){
+			if (ChannelShell.class == clazz) {
 				ctype = ChannelType.shell;
-			}else if(ChannelSftp.class == clazz){
+			} else if (ChannelSftp.class == clazz) {
 				ctype = ChannelType.sftp;
-			}else if(ChannelExec.class == clazz){
+			} else if (ChannelExec.class == clazz) {
 				ctype = ChannelType.exec;
-			}else {
+			} else {
 				throw new RuntimeException("Unknow channel type!!!");
 			}
 			return ctype.toString();

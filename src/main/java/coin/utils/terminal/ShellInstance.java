@@ -2,7 +2,6 @@ package coin.utils.terminal;
 
 import java.io.*;
 import com.jcraft.jsch.*;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Shell脚本执行实例。
@@ -35,7 +34,7 @@ public class ShellInstance {
 			exec.connect(CHANNEL_TIMEOUT);
 			
 			// 非阻塞式读取
-			int exitStatus = ExecResult.DEF_CODE;
+			int exitStatus;
 			StringBuilder result = new StringBuilder(); 
 		    for(byte[] buf=new byte[BASE_BUF];;){
 		        while(inStream.available()>0){
@@ -48,7 +47,6 @@ public class ShellInstance {
 		          exitStatus = exec.getExitStatus();
 		          break;
 		        }
-		        try{TimeUnit.MILLISECONDS.sleep(100);}catch(Exception ee){}
 		    }
 		    rs.setExitStatus(exitStatus);
 		    rs.setResult(result.toString());

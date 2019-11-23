@@ -61,7 +61,7 @@ public class SftpInstance {
 			throw new RuntimeException(e);
 		} finally{
 			this.disconnect();
-			try {inStream.close();}catch (Exception e){}
+			try {inStream.close();}catch (Exception ignored){}
 		}
 	}
 	
@@ -98,7 +98,7 @@ public class SftpInstance {
 			throw new RuntimeException(e);
 		} finally{
 			this.disconnect();
-			try {outStream.close();}catch (Exception e){}
+			try {outStream.close();}catch (Exception ignored){}
 		}
 	}
 	
@@ -107,7 +107,7 @@ public class SftpInstance {
      * @param directory 远程路径
      */
 	public List<LsEntry> getFileListEntry(String directory) {
-    	List<LsEntry> ls = null;
+    	List<LsEntry> ls;
     	try {
     		this.connection();
         	ls = sftp.ls(directory);
@@ -117,7 +117,7 @@ public class SftpInstance {
 			this.disconnect();
 		}
     	if(ls==null){
-    		ls = new ArrayList<LsEntry>(1);
+    		ls = new ArrayList<>(1);
     	}
         return ls;
     }

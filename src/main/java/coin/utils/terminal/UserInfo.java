@@ -45,26 +45,23 @@ public class UserInfo {
 	
 	@Override
 	public int hashCode() {
-		return (this.toString()+this.passwd)
-				.hashCode();
+		return (this.toString()+this.passwd).hashCode();
 	}
 	
 	@Override
 	public boolean equals(Object obj) {
-		if(obj==null || !(obj instanceof UserInfo)){
+		if(!(obj instanceof UserInfo)){
 			return false;
 		}
 		UserInfo sobj=(UserInfo) obj;
         return this.toString().equals(sobj.toString())
-                && this.passwd !=null 
-                && this.passwd.equals(sobj.getPasswd());
+                && this.passwd !=null && this.passwd.equals(sobj.getPasswd());
     }
 	
 	@Override
 	public String toString() {
-		return "[host:"+this.host
-				+" port:"+this.port
-				+" username"+this.username+"]";
+		return "[host:" + this.host + " port:" + this.port
+				+ " username" + this.username + "]";
 	}
 	
 	
