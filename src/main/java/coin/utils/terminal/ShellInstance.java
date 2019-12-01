@@ -1,6 +1,8 @@
 package coin.utils.terminal;
 
 import java.io.*;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import com.jcraft.jsch.*;
 
 /**
@@ -17,17 +19,63 @@ public class ShellInstance {
 		this.userInfo = userInfo;
 	}
 
+
+	/**
+	 * 批量执行, 返回执行记录
+	 * @param inputDataList 输入数据列表
+	 * @return 执行记录
+	 */
+	public String execute(List<String> inputDataList) {
+		StringBuilder result = new StringBuilder();
+		ChannelShell channel = null;
+		try {
+			channel = (ChannelShell) SshSessionContainer.getSession(userInfo).openChannel("shell");
+			channel.connect(CHANNEL_TIMEOUT);
+			InputStream inputStream = channel.getInputStream();
+			OutputStream outputStream = channel.getOutputStream();
+
+			for (String data : inputDataList) {
+				// 向终端发送数据
+				outputStream.write((data + "\n").getBytes());
+				outputStream.flush();
+				TimeUnit.MILLISECONDS.sleep(500);
+			}
+
+			// 非阻塞式读取
+			FR:
+			for (byte[] buf = new byte[BASE_BUF]; ;) {
+				while (inputStream.available() > 0) {
+					int len = inputStream.read(buf);
+					result.append(new String(buf, 0, len));
+					result.append(System.getProperty("line.separator"));
+					TimeUnit.MILLISECONDS.sleep(300);
+					if (inputStream.available() <= 0) {
+						break FR;
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (channel != null)
+				channel.disconnect();
+		}
+
+		return result.toString();
+	}
+
+
 	/**
 	 * 执行shell命令
-	 * @param shellCmd 命令串
+	 * @param shellCmd shell命令
 	 * @return 执行结果
 	 */
 	public ExecResult execute(String shellCmd){
 		ExecResult rs = new ExecResult();
 		ChannelExec exec = null;
 		try {
-			exec = SshChannelFactory
-				.getChannel(userInfo, ChannelExec.class);
+			exec = (ChannelExec) SshSessionContainer.getSession(userInfo).openChannel("exec");
 			exec.setCommand(shellCmd);
 			exec.setInputStream(null);
 			InputStream inStream=exec.getInputStream();

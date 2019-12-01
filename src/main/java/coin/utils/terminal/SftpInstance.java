@@ -137,7 +137,7 @@ public class SftpInstance {
 	 * @throws JSchException 
 	 */
 	private void connection() throws JSchException {
-		sftp = SshChannelFactory.getChannel(userInfo, ChannelSftp.class);
+		sftp = (ChannelSftp) SshSessionContainer.getSession(userInfo).openChannel("sftp");
 		sftp.connect(CHANNEL_TIMEOUT);
 	}
 	
