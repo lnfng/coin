@@ -10,14 +10,29 @@ public class UserInfo {
 	private String host;		// IP地址
 	private Integer port;		// 端口
 	private String username;	// 用户名
-	private transient String passwd; // 密码
-	
-	
+	private String passwd; // 密码
+	private static int DEF_PORT = 22; // 默认端口
+
+	public UserInfo() {
+
+	}
+
+	public UserInfo(String host, String username, String passwd) {
+		this(host, DEF_PORT, username, passwd);
+	}
+
+	public UserInfo(String host, int port, String username, String passwd) {
+		this.host = host;
+		this.username = username;
+		this.passwd = passwd;
+		this.port = port;
+	}
+
 	public String getHost() {
 		return host;
 	}
 	public Integer getPort() {
-		return port;
+		return port == null ? DEF_PORT : port;
 	}
 	public String getUsername() {
 		return username;
@@ -53,15 +68,14 @@ public class UserInfo {
 		if(!(obj instanceof UserInfo)){
 			return false;
 		}
-		UserInfo sobj=(UserInfo) obj;
-        return this.toString().equals(sobj.toString())
-                && this.passwd !=null && this.passwd.equals(sobj.getPasswd());
+		UserInfo userInfo=(UserInfo) obj;
+        return this.toString().equals(userInfo.toString())
+                && this.passwd !=null && this.passwd.equals(userInfo.getPasswd());
     }
 	
 	@Override
 	public String toString() {
-		return "[host:" + this.host + " port:" + this.port
-				+ " username" + this.username + "]";
+		return "[host:" + this.host + " port:" + this.port + " username:" + this.username + "]";
 	}
 	
 	

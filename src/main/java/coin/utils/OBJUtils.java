@@ -49,6 +49,28 @@ public class OBJUtils {
         }
         return true;
 	}
+
+	/**
+	 * 是否有空字符
+	 * @param strs
+	 * @return
+	 */
+	public static boolean hasBlankStr(String... strs) {
+		if (strs == null || strs.length == 0) return true;
+		for (String str : strs) {
+			if (isBlankStr(str)) return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 不含空字符
+	 * @param strs
+	 * @return
+	 */
+	public static boolean notHasBlankStr(String... strs) {
+		return !hasBlankStr(strs);
+	}
 	
 	/**
 	 * 是否非空字符串
