@@ -10,7 +10,7 @@ import coin.utils.CJSONUtils;
  * @author Qian
  */
 @Func(value="json", desc="解析json串")
-public class JsonFunc extends BaseFunc {
+public class JSONFunc extends BaseFunc {
     // 参数匹配规则
     private static final String args_pattern = "\\s*\\w+\\s+(-k)\\s+\\w+\\s+(-n\\s+\\d+\\s+)?[{|\\[][\\W\\w]*[}|\\]]\\s*";
 
