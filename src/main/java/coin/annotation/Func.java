@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
 public @interface Func {
 	
 	/**功能编码*/
-	String value();
+	String[] value();
 	
 	/**
 	 * 功能描述
