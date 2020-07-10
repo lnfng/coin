@@ -8,6 +8,7 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,6 +19,13 @@ public class RSAEncryptUtils {
 
     private static final String CHARSET = "UTF-8";
     private static final String RSA_ALGORITHM = "RSA";
+    /**
+     * Cipher cipher = Cipher.getInstance("RSA");
+     * 这是不对的，不应该只传RSA，应该完整的把RSA的填充方式也写上：
+     * Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+     */
+    private static final String RSA_ALGORITHM_INS = "RSA/ECB/PKCS1Padding";
+
 
 
     /**
@@ -41,10 +49,10 @@ public class RSAEncryptUtils {
         //得到公钥
         Key publicKey = keyPair.getPublic();
 
-        String publicKeyStr = Base64.encode(publicKey.getEncoded());
+        String publicKeyStr = Base64.getEncoder().encodeToString(publicKey.getEncoded());
         //得到私钥
         Key privateKey = keyPair.getPrivate();
-        String privateKeyStr = Base64.encode(privateKey.getEncoded());
+        String privateKeyStr = Base64.getEncoder().encodeToString(privateKey.getEncoded());
         Map<String, String> keyPairMap = new HashMap<String, String>();
         keyPairMap.put("publicKey", publicKeyStr);
         keyPairMap.put("privateKey", privateKeyStr);
@@ -61,7 +69,7 @@ public class RSAEncryptUtils {
         try {
             //通过X509编码的Key指令获得公钥对象
             KeyFactory keyFactory = KeyFactory.getInstance(RSA_ALGORITHM);
-            X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(Base64.decode(publicKey));
+            X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(Base64.getDecoder().decode(publicKey.getBytes(CHARSET)));
             return  (RSAPublicKey) keyFactory.generatePublic(x509KeySpec);
         } catch (Exception e) {
             throw new RuntimeException("获取公钥[" + publicKey + "]异常", e);
@@ -77,7 +85,7 @@ public class RSAEncryptUtils {
         try {
             //通过PKCS#8编码的Key指令获得私钥对象
             KeyFactory keyFactory = KeyFactory.getInstance(RSA_ALGORITHM);
-            PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(Base64.decode(privateKey));
+            PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(Base64.getDecoder().decode(privateKey.getBytes(CHARSET)));
             return  (RSAPrivateKey) keyFactory.generatePrivate(pkcs8KeySpec);
         } catch (Exception e) {
             throw new RuntimeException("获取私钥[" + privateKey + "]异常", e);
@@ -92,9 +100,9 @@ public class RSAEncryptUtils {
      */
     public static String publicEncrypt(String data, RSAPublicKey publicKey) {
         try {
-            Cipher cipher = Cipher.getInstance(RSA_ALGORITHM);
+            Cipher cipher = Cipher.getInstance(RSA_ALGORITHM_INS);
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-            return Base64.encode(rsaSplitCodec(cipher, Cipher.ENCRYPT_MODE, data.getBytes(CHARSET), publicKey.getModulus().bitLength()));
+            return Base64.getEncoder().encodeToString(rsaSplitCodec(cipher, Cipher.ENCRYPT_MODE, data.getBytes(CHARSET), publicKey.getModulus().bitLength()));
         } catch (Exception e) {
             throw new RuntimeException("加密字符串[" + data + "]时遇到异常", e);
         }
@@ -109,9 +117,9 @@ public class RSAEncryptUtils {
 
     public static String privateDecrypt(String data, RSAPrivateKey privateKey) {
         try {
-            Cipher cipher = Cipher.getInstance(RSA_ALGORITHM);
+            Cipher cipher = Cipher.getInstance(RSA_ALGORITHM_INS);
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
-            return new String(rsaSplitCodec(cipher, Cipher.DECRYPT_MODE, Base64.decode(data), privateKey.getModulus().bitLength()), CHARSET);
+            return new String(rsaSplitCodec(cipher, Cipher.DECRYPT_MODE, Base64.getDecoder().decode(data.getBytes(CHARSET)), privateKey.getModulus().bitLength()), CHARSET);
         } catch (Exception e) {
             throw new RuntimeException("解密字符串[" + data + "]时遇到异常", e);
         }
@@ -126,9 +134,9 @@ public class RSAEncryptUtils {
 
     public static String privateEncrypt(String data, RSAPrivateKey privateKey) {
         try {
-            Cipher cipher = Cipher.getInstance(RSA_ALGORITHM);
+            Cipher cipher = Cipher.getInstance(RSA_ALGORITHM_INS);
             cipher.init(Cipher.ENCRYPT_MODE, privateKey);
-            return Base64.encode(rsaSplitCodec(cipher, Cipher.ENCRYPT_MODE, data.getBytes(CHARSET), privateKey.getModulus().bitLength()));
+            return Base64.getEncoder().encodeToString(rsaSplitCodec(cipher, Cipher.ENCRYPT_MODE, data.getBytes(CHARSET), privateKey.getModulus().bitLength()));
         } catch (Exception e) {
             throw new RuntimeException("加密字符串[" + data + "]时遇到异常", e);
         }
@@ -143,9 +151,9 @@ public class RSAEncryptUtils {
 
     public static String publicDecrypt(String data, RSAPublicKey publicKey) {
         try {
-            Cipher cipher = Cipher.getInstance(RSA_ALGORITHM);
+            Cipher cipher = Cipher.getInstance(RSA_ALGORITHM_INS);
             cipher.init(Cipher.DECRYPT_MODE, publicKey);
-            return new String(rsaSplitCodec(cipher, Cipher.DECRYPT_MODE, Base64.decode(data), publicKey.getModulus().bitLength()), CHARSET);
+            return new String(rsaSplitCodec(cipher, Cipher.DECRYPT_MODE, Base64.getDecoder().decode(data.getBytes(CHARSET)), publicKey.getModulus().bitLength()), CHARSET);
         } catch (Exception e) {
             throw new RuntimeException("解密字符串[" + data + "]时遇到异常", e);
         }
