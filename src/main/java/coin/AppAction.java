@@ -16,7 +16,6 @@ public class AppAction {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		new String();
 		if(OBJUtils.isEmptyArray(args)){
 			System.out.println(">>");
 			System.out.println(">> 参数为空, 没有任何目标被执行!");
