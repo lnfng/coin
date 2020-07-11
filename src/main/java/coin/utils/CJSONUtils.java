@@ -226,7 +226,7 @@ public class CJSONUtils {
 		private int n;
 		
 		// 匹配到的次数
-		private int count = 1;
+		private int count = 0;
 		
 		// 目标key
 		private String key;
@@ -237,7 +237,7 @@ public class CJSONUtils {
 		// 下一个被查值列表
 		private List<Object> nextList;
 
-		public FindAction(Object rawValue, String key, int n){
+		FindAction(Object rawValue, String key, int n){
 			this.n = n;
 			this.key = key;
 			this.rawValue = rawValue;
@@ -263,14 +263,14 @@ public class CJSONUtils {
 		 * 搜索JSON值 
 		 * @param type 枚举:JSONObject|JSONArray|String
 		 */
-		public <T> T searchValue(Class<T> type) {
+		<T> T searchValue(Class<T> type) {
 
 			List<Object> nList = new ArrayList<Object>();
 			for (Object obj : nextList) {
 				if (obj instanceof JSONObject) {
 
 					JSONObject jsonObj = (JSONObject) obj;
-					if (jsonObj.containsKey(key) && count++ == n) {
+					if (jsonObj.containsKey(key) && (++count) == n) {
 						Object target = jsonObj.get(key);
 						if (target == null) {
 						    return null;
@@ -284,15 +284,8 @@ public class CJSONUtils {
 							return (T) target;
 						}
 					}
-
-					for (Entry<String, Object> ent : jsonObj.entrySet()) {
-						Object object = ent.getValue();
-						if (object instanceof JSONObject) {
-							nList.add(object);
-						} else if (object instanceof JSONArray) {
-							nList.addAll((JSONArray) object);
-						}
-					}
+					// 不匹配则取下一层
+					nList.addAll(jsonObj.values());
 
 				} else if (obj instanceof JSONArray) {
 					nList.addAll((JSONArray) obj);
@@ -316,6 +309,7 @@ public class CJSONUtils {
 		System.out.println(findValue(jsonstr, "test", 2));
 		System.out.println(findValue(jsonstr, "test", 3));
 		System.out.println(findValue(jsonstr, "test", 4));
+		System.out.println(findValue(jsonstr, "test", 5));
 
 		JSONObject jsonObject = jsonToBean(jsonstr, JSONObject.class);
 		System.out.println(findObject(jsonObject, "obj"));
