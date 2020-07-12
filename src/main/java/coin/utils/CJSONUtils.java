@@ -53,15 +53,15 @@ public class CJSONUtils {
 	 * @param clazz Bean类型
 	 * @return Bean对象
 	 */
-	public static <T> T jsonToBean(String jsonstr,Class<T> clazz){
-		if (jsonstr == null || clazz == null) {
+	public static <T> T jsonToBean(String jsonStr,Class<T> clazz){
+		if (jsonStr == null || clazz == null) {
 			return null;
 		}
 		T obj = null;
 		try {
-			obj = JSONObject.parseObject(jsonstr, clazz);
+			obj = JSONObject.parseObject(jsonStr, clazz);
 		} catch (Exception e) {
-			// ignore
+			throw new RuntimeException("json字符串转成javaBean对象异常", e);
 		}
 		return obj;
 	}
@@ -69,27 +69,27 @@ public class CJSONUtils {
 	
 	/**
 	 * 查找JSON值
-	 * @param jsonstr 原JSON串
+	 * @param jsonStr 原JSON串
 	 * @param key KEY值
 	 * @return 返回第一个搜索到的值(按对象层级由外及内)
 	 */
-	public static String findValue(String jsonstr,String key){
-		return findValue(jsonstr, key, 1);
+	public static String findValue(String jsonStr,String key){
+		return findValue(jsonStr, key, 1);
 	}
 	
 	
 	/**
 	 * 查找JSON值
-	 * @param jsonstr 原JSON串
+	 * @param jsonStr 原JSON串
 	 * @param key KEY值
 	 * @param n 该KEY第n(n>=1)次出现
 	 * @return 返回第n次搜索到的值(按对象层级由外及内)
 	 */
-	public static String findValue(String jsonstr, String key, int n){
-		if (jsonstr == null || key == null || n<1) {
+	public static String findValue(String jsonStr, String key, int n){
+		if (jsonStr == null || key == null || n<1) {
 			return null;
 		}
-		return new FindAction(jsonstr,key,n).searchValue(String.class);
+		return new FindAction(jsonStr,key,n).searchValue(String.class);
 	}
 	
 	/**
@@ -119,27 +119,27 @@ public class CJSONUtils {
 	
 	/**
 	 * 查找JSON对象
-	 * @param jsonstr 原JSON串
+	 * @param jsonStr 原JSON串
 	 * @param key KEY值
 	 * @return 返回第1次搜索到的值(按对象层级由外及内)
 	 */
-	public static JSONObject findObject(String jsonstr, String key){
-		return findObject(jsonstr, key, 1);
+	public static JSONObject findObject(String jsonStr, String key){
+		return findObject(jsonStr, key, 1);
 	}
 	
 	
 	/**
 	 * 查找JSON对象
-	 * @param jsonstr 原JSON串
+	 * @param jsonStr 原JSON串
 	 * @param key KEY值
 	 * @param n 该KEY第n(n>=1)次出现
 	 * @return 返回第n次搜索到的值(按对象层级由外及内)
 	 */
-	public static JSONObject findObject(String jsonstr, String key, int n){
-		if (jsonstr == null || key == null || n < 1) {
+	public static JSONObject findObject(String jsonStr, String key, int n){
+		if (jsonStr == null || key == null || n < 1) {
 			return null;
 		}
-		return new FindAction(jsonstr,key,n).searchValue(JSONObject.class);
+		return new FindAction(jsonStr,key,n).searchValue(JSONObject.class);
 	}
 	
 	
@@ -170,26 +170,26 @@ public class CJSONUtils {
 	
 	/**
 	 * 查找JSON数组
-	 * @param jsonstr 原JSON串
+	 * @param jsonStr 原JSON串
 	 * @param key KEY值
 	 * @return 返回第1次搜索到的值(按对象层级由外及内)
 	 */
-	public static JSONArray findArray(String jsonstr, String key){
-		return findArray(jsonstr, key, 1);
+	public static JSONArray findArray(String jsonStr, String key){
+		return findArray(jsonStr, key, 1);
 	}
 	
 	/**
 	 * 查找JSON数组
-	 * @param jsonstr 原JSON串
+	 * @param jsonStr 原JSON串
 	 * @param key KEY值
 	 * @param n 该KEY第n(n>=1)次出现
 	 * @return 返回第n次搜索到的值(按对象层级由外及内)
 	 */
-	public static JSONArray findArray(String jsonstr, String key, int n){
-		if (jsonstr == null || key == null || n < 1) {
+	public static JSONArray findArray(String jsonStr, String key, int n){
+		if (jsonStr == null || key == null || n < 1) {
 			return null;
 		}
-		return new FindAction(jsonstr,key,n).searchValue(JSONArray.class);
+		return new FindAction(jsonStr,key,n).searchValue(JSONArray.class);
 	}
 	
 	/**
@@ -247,11 +247,11 @@ public class CJSONUtils {
 		private void init() {
 			if (rawValue instanceof String) {
 				try{
-					String jsonstr = ((String) rawValue).trim();
-					if (jsonstr.startsWith("{"))
-						this.rawValue = JSON.parseObject(jsonstr);
-					else if (jsonstr.startsWith("["))
-						this.rawValue = JSON.parseArray(jsonstr);
+					String jsonStr = ((String) rawValue).trim();
+					if (jsonStr.startsWith("{"))
+						this.rawValue = JSON.parseObject(jsonStr);
+					else if (jsonStr.startsWith("["))
+						this.rawValue = JSON.parseArray(jsonStr);
 				}catch(Exception e) {
 					// ignore
 				}
@@ -303,22 +303,22 @@ public class CJSONUtils {
 	
 	public static void main(String[] args) {
 
-		String jsonstr = "{\"array\":[{\"test\":\"1\"},{\"obj\":{\"obj\":{\"test\":\"5\"},\"test\":\"3\"},\"test\":\"2\"},{\"obj\":{\"test123\":\"1098\"}},{\"obj\":{\"test\":\"4\"}}]}";
+		String jsonStr = "{\"array\":[{\"test\":\"1\"},{\"obj\":{\"obj\":{\"test\":\"5\"},\"test\":\"3\"},\"test\":\"2\"},{\"obj\":{\"test123\":\"1098\"}},{\"obj\":{\"test\":\"4\"}}]}";
 
-		System.out.println(findValue(jsonstr, "test", 1));
-		System.out.println(findValue(jsonstr, "test", 2));
-		System.out.println(findValue(jsonstr, "test", 3));
-		System.out.println(findValue(jsonstr, "test", 4));
-		System.out.println(findValue(jsonstr, "test", 5));
+		System.out.println(findValue(jsonStr, "test", 1));
+		System.out.println(findValue(jsonStr, "test", 2));
+		System.out.println(findValue(jsonStr, "test", 3));
+		System.out.println(findValue(jsonStr, "test", 4));
+		System.out.println(findValue(jsonStr, "test", 5));
 
-		JSONObject jsonObject = jsonToBean(jsonstr, JSONObject.class);
+		JSONObject jsonObject = jsonToBean(jsonStr, JSONObject.class);
 		System.out.println(findObject(jsonObject, "obj"));
 		System.out.println(findArray(jsonObject, "array"));
 
 		for(int j = 0; j < 10; j++) {
 			long startTime = System.currentTimeMillis();
 			for(int i = 0; i < 10*10000; i++) {
-				findValue(jsonstr, "cust_name", 3);
+				findValue(jsonStr, "cust_name", 3);
 			}
 			System.out.println(">> spend time : " + (System.currentTimeMillis() - startTime));
 		}
