@@ -13,8 +13,8 @@ import java.util.Map;
  * @author Qian
  * @date 2019/12/24
  */
-@Func(value={"envA", "envB", "envC", "envS", "envT"},
-        desc="envA:生产A环境, envB:生产B环境, envC:生产C环境, envS:生产商品系统, envT:测试环境")
+@Func(value={"envA", "envB", "envC", "envD", "envS", "envT"},
+        desc="envA:生产A环境, envB:生产B环境, envC:生产C环境, envD:调度环境, envS:生产商品系统, envT:测试环境")
 public class EnvBaseFunc extends BaseFunc {
     // 日志文件
     private final LogFile logFile;
