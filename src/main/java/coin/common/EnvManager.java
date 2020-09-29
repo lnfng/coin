@@ -99,8 +99,8 @@ public class EnvManager {
      */
     public List<Map> getServerInfos() {
         // 查找对应命令
-        String sql = "select s.*,u.*,s.descript sdescript, u.descript udescript from machine_user u, server_info s " +
-                "where u.id = s.muserid order by s.start_priority";
+        String sql = "select s.*,u.*,s.descript sdescript, u.descript udescript from " +
+                "ES_MACHINE_INFO u, ES_SERVER_INFO s where u.id = s.mid order by s.start_priority";
         return operator.queryForList(sql);
     }
 
@@ -144,7 +144,7 @@ public class EnvManager {
     }
 
     /**
-     * 监测服务
+     * 监测服务 只检测端口是否可访问
      * @param serverMap
      * @return
      */
@@ -152,8 +152,9 @@ public class EnvManager {
         String host = (String) serverMap.get("ip");
         String port = (String) serverMap.get("server_port");
         String server_type = (String) serverMap.get("server_type");
+        String server_name = (String) serverMap.get("server_name");
         int serverPort = OBJUtils.isBlankStr(port) ? -1 : Integer.parseInt(port);
-        boolean isAlive = "weblogic".equalsIgnoreCase(server_type)
+        boolean isAlive = "weblogic".equalsIgnoreCase(server_type) && !"flow".equals(server_name)
                 ? CommUtils.weblogicIsAlive(host, serverPort) : CommUtils.serverIsAlive(host, serverPort);
         String log = ">> " + getServerDesc(serverMap) + tab + tab + (isAlive ? "运行中" : "------已停止");
         System.out.println(log);
