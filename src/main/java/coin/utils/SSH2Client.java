@@ -94,7 +94,7 @@ public class SSH2Client {
      * 上传文件
      * @param remotePath 远程文件路径
      * @param fileName 文件名称
-     * @param inputStream 输出流
+     * @param inputStream 源文件流
      */
     public void uploadFile(String remotePath, String fileName, InputStream inputStream) {
         try {
@@ -107,9 +107,9 @@ public class SSH2Client {
             long fileOffset = 0;
             byte[] buf=new byte[BASE_BUF];
             for (int len = 0; (len=inputStream.read(buf)) != -1; fileOffset += len) {
-                System.out.println(">> uploadFile fileOffset:" + fileOffset + " len:" + len);
                 client.write(fileHandle, fileOffset, buf, 0, len);
             }
+            // 必须关掉, 避免数据缺失
             client.closeFile(fileHandle);
             client.close();
         } catch (Exception e) {
